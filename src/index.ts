@@ -15,16 +15,21 @@ async function handleEmail(message: ForwardableEmailMessage, env: Env, ctx: Exec
 
   const email = await parser.parse(await rawEmail.arrayBuffer())
 
-  // // get attachment
-  // if (email.attachments === null || email.attachments.length === 0) {
-  //     throw new Error('no attachments')
-  // }
-  // const attachment = email.attachments[0]
+  const content = `
+# **【你有新邮件，请及时处理】**
+|主题|${message.headers.get('subject')}|
+|:-:|:-:|
+|发件人|${message.from}|
+|收件人|${message.to}|
+\`\`\`邮件内容
+${email.text??"无内容"}
+\`\`\`
+`
 
   const body = {
-    "msgtype": "markdown",
-    "markdown": {
-      "content": `<font color="warning">【你有新邮件，请及时处理】</font>\n主题:<font color="warning">${message.headers.get('subject')}</font>\n发件人:<font color="comment">${message.from}</font>\n收件人:<font color="comment">${message.to}</font>\n> <font color="comment">${email.text??"无内容"}</font>`
+    "msgtype": "markdown_v2",
+    "markdown_v2": {
+      "content": content
     }
   }
 
